@@ -1,5 +1,5 @@
 from django.contrib import admin
-from property.models import Flat
+from property.models import Flat, Claim
 
 # from .models import Flat
 
@@ -13,3 +13,11 @@ class FlatAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Flat, FlatAdmin)
+
+
+class ClaimAdmin(admin.ModelAdmin):
+    raw_id_fields = ('flat',)
+    list_display = ('user', 'flat', 'created_at')
+
+
+admin.site.register(Claim, ClaimAdmin)
