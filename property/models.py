@@ -15,7 +15,8 @@ class Flat(models.Model):
     new_building = models.BooleanField(
         default=None,
         choices=BOOL_CHOICES,
-        blank=True)
+        blank=True,
+        null=True)
     created_at = models.DateTimeField(
         'Когда создано объявление',
         default=timezone.now,
