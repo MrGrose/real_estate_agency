@@ -70,7 +70,6 @@ class Flat(models.Model):
         verbose_name="Кто лайкнул",
         blank=True)
 
-    
     def __str__(self):
         return f'{self.town}, {self.address} ({self.price}р.)'
 
@@ -99,7 +98,10 @@ class Owner(models.Model):
             region='RU',
             blank=True,
             null=True)
-    holder_flat = models.ManyToManyField(Flat, related_name="holder_flats", verbose_name='Квартиры в собственности')
+    holder_flat = models.ManyToManyField(
+        Flat,
+        related_name="holder_flats",
+        verbose_name='Квартиры в собственности')
 
     def __str__(self):
-        return f'В собственности у {self.holder_flat}'
+        return f'{self.holder}'
