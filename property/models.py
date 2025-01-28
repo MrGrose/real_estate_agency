@@ -70,6 +70,7 @@ class Flat(models.Model):
         verbose_name="Кто лайкнул",
         blank=True)
 
+    
     def __str__(self):
         return f'{self.town}, {self.address} ({self.price}р.)'
 
@@ -91,14 +92,14 @@ class Claim(models.Model):
 
 
 class Owner(models.Model):
-    owner = models.CharField('ФИО владельца', max_length=200)
-    owners_phone = models.CharField('Номер владельца', max_length=20)
-    owner_pure_phone = PhoneNumberField(
-        'Нормализованный номер владельца',
-        region='RU',
-        blank=True,
-        null=True)
-    owner_flat = models.ManyToManyField(Flat, related_name="owner_flats", verbose_name='Квартиры в собственности')
+    holder = models.CharField('ФИО владельца', max_length=200)
+    holder_phone = models.CharField('Номер владельца', max_length=20)
+    holder_pure_phone = PhoneNumberField(
+            'Нормализованный номер владельца',
+            region='RU',
+            blank=True,
+            null=True)
+    holder_flat = models.ManyToManyField(Flat, related_name="holder_flats", verbose_name='Квартиры в собственности')
 
     def __str__(self):
-        return self.owner, self.owner_flat
+        return f'В собственности: {self.holder_flat}'
