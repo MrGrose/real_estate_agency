@@ -11,23 +11,20 @@ BOOL_CHOICES = (
 
 
 class Flat(models.Model):
-    owner = models.CharField('ФИО владельца', max_length=200)
-    owners_phone = models.CharField('Номер владельца', max_length=20)
-    owner_pure_phone = PhoneNumberField(
-        'Нормализованный номер владельца',
-        region='RU',
-        blank=True,
-        null=True)
-
+    owners = models.ManyToManyField(
+        'Owner',
+        related_name='owned',
+        verbose_name='Владелец',
+        blank=True)
+    created_at = models.DateTimeField(
+        'Когда создано объявление',
+        default=timezone.now,
+        db_index=True)
     new_building = models.BooleanField(
         default=None,
         choices=BOOL_CHOICES,
         blank=True,
         null=True)
-    created_at = models.DateTimeField(
-        'Когда создано объявление',
-        default=timezone.now,
-        db_index=True)
 
     description = models.TextField('Текст объявления', blank=True)
     price = models.IntegerField('Цена квартиры', db_index=True)
@@ -58,7 +55,10 @@ class Flat(models.Model):
         blank=True,
         db_index=True)
 
-    has_balcony = models.NullBooleanField('Наличие балкона', db_index=True)
+    has_balcony = models.BooleanField(
+        'Наличие балкона',
+        db_index=True,
+        null=True)
     active = models.BooleanField('Активно-ли объявление', db_index=True)
     construction_year = models.IntegerField(
         'Год постройки здания',
@@ -68,6 +68,7 @@ class Flat(models.Model):
     liked_by = models.ManyToManyField(
         User,
         verbose_name="Кто лайкнул",
+        related_name='likes',
         blank=True)
 
     def __str__(self):
@@ -78,11 +79,14 @@ class Claim(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='Кто жаловался')
+        verbose_name='Кто жаловался',
+        related_name='complaints',
+        db_index=True)
     flat = models.ForeignKey(
         Flat,
         on_delete=models.CASCADE,
-        verbose_name='Квартира, на которую жаловались')
+        verbose_name='Квартира, на которую жаловались',
+        related_name='plaintive')
     text = models.TextField('Текст жалобы')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -91,17 +95,16 @@ class Claim(models.Model):
 
 
 class Owner(models.Model):
-    holder = models.CharField('ФИО владельца', max_length=200)
-    holder_phone = models.CharField('Номер владельца', max_length=20)
-    holder_pure_phone = PhoneNumberField(
+    name = models.CharField('ФИО владельца', max_length=200, db_index=True)
+    phone = models.CharField('Номер владельца', max_length=20)
+    pure_phone = PhoneNumberField(
             'Нормализованный номер владельца',
-            region='RU',
             blank=True,
             null=True)
-    holder_flat = models.ManyToManyField(
+    flats = models.ManyToManyField(
         Flat,
-        related_name="holder_flats",
+        related_name="flats",
         verbose_name='Квартиры в собственности')
 
     def __str__(self):
-        return f'{self.holder}'
+        return f'{self.name}'
