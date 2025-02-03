@@ -11,11 +11,6 @@ BOOL_CHOICES = (
 
 
 class Flat(models.Model):
-    owners = models.ManyToManyField(
-        'Owner',
-        related_name='owned',
-        verbose_name='Владелец',
-        blank=True)
     created_at = models.DateTimeField(
         'Когда создано объявление',
         default=timezone.now,
@@ -25,10 +20,8 @@ class Flat(models.Model):
         choices=BOOL_CHOICES,
         blank=True,
         null=True)
-
     description = models.TextField('Текст объявления', blank=True)
     price = models.IntegerField('Цена квартиры', db_index=True)
-
     town = models.CharField(
         'Город, где находится квартира',
         max_length=50,
@@ -54,7 +47,6 @@ class Flat(models.Model):
         null=True,
         blank=True,
         db_index=True)
-
     has_balcony = models.BooleanField(
         'Наличие балкона',
         db_index=True,
@@ -86,7 +78,7 @@ class Claim(models.Model):
         Flat,
         on_delete=models.CASCADE,
         verbose_name='Квартира, на которую жаловались',
-        related_name='plaintive')
+        related_name='claims')
     text = models.TextField('Текст жалобы')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -103,8 +95,8 @@ class Owner(models.Model):
             null=True)
     flats = models.ManyToManyField(
         Flat,
-        related_name="flats",
+        related_name="owners",
         verbose_name='Квартиры в собственности')
 
     def __str__(self):
-        return f'{self.name}'
+        return self.name

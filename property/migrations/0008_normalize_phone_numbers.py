@@ -9,24 +9,22 @@ def normalize_phone_numbers(apps, schema_editor):
     flats = Flat.objects.all()
 
     updates = []
-
     for flat in flats:
-        if not flat.owners_phonenumber:
-            flat.owner_pure_phone = None
-            updates.append(flat)
-            continue
-
-        raw_phone_number = flat.owners_phonenumber
-        parsed_phone_number = parse(raw_phone_number, 'RU')
-
-        if not is_possible_number(parsed_phone_number) or not is_valid_number(parsed_phone_number):
-            flat.owner_pure_phone = None
-        else:
-            flat.owner_pure_phone = parsed_phone_number
-
+        flat.owner_pure_phone = get_pure_phone_number(flat.owners_phonenumber)
         updates.append(flat)
 
     Flat.objects.bulk_update(updates, ['owner_pure_phone'])
+
+
+def get_pure_phone_number(phone_number):
+    if not phone_number:
+        return None
+
+    parsed_phone_number = parse(phone_number, 'RU')
+
+    if not is_possible_number(parsed_phone_number) or not is_valid_number(parsed_phone_number):
+        return None
+    return parsed_phone_number
 
 
 class Migration(migrations.Migration):

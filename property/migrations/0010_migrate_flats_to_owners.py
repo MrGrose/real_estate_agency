@@ -16,7 +16,7 @@ def migrate_flats_to_owners(apps, schema_editor):
                     'pure_phone': flat.owner_pure_phone,
                 }
             )
-            flat.owners.add(owner)
+            owner.flats.add(flat)
 
 
 class Migration(migrations.Migration):
